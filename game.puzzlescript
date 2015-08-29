@@ -1,0 +1,111 @@
+title Electronic Sport
+author BaseCase
+homepage caseybrant.com
+require_player_movement
+(realtime_interval 0.5)
+verbose_logging
+
+
+========
+OBJECTS
+========
+
+Background
+Green
+
+Wall
+Brown
+
+Player
+White
+
+Player2
+Black
+
+Player1Move1
+#00F
+
+Player1Move2
+#00E
+
+Player1Move3
+#00D
+
+Player1Move4
+#00C
+
+Player1Move1Used
+Gray
+
+Player1Move2Used
+Gray
+
+Player1Move3Used
+Gray
+
+Player1Move4Used
+Gray
+
+Player2MoveRemaining
+LightBlue
+
+Player2MoveUsed
+Brown
+
+
+=======
+LEGEND
+=======
+
+. = Background
+# = Wall
+@ = Player
+& = Player2
+1 = Player1Move1
+2 = Player1Move2
+3 = Player1Move3
+4 = Player1Move4
+
+Moves = Player1Move1 or Player1Move2 or Player1Move3 or Player1Move4 or Player1Move1Used or Player1Move2Used or Player1Move3Used or Player1Move4Used
+
+
+=======
+SOUNDS
+=======
+
+
+================
+COLLISIONLAYERS
+================
+
+Background
+Player2
+Player, Wall, Moves, Player2MoveRemaining, Player2MoveUsed
+
+
+======
+RULES
+======
+
+[Moving Player] [Player1Move3Used | Player1Move4] -> [Moving Player] [Player1Move3Used | Player1Move4Used]
+[Moving Player] [Player1Move2Used | Player1Move3] -> [Moving Player] [Player1Move2Used | Player1Move3Used]
+[Moving Player] [Player1Move1Used | Player1Move2] -> [Moving Player] [Player1Move1Used | Player1Move2Used]
+[Moving Player] [Player1Move1]                    -> [Moving Player] [Player1Move1Used]
+
+
+==============
+WINCONDITIONS
+==============
+
+
+=======
+LEVELS
+=======
+
+#1234########
+#...........#
+#...........#
+#@.........&#
+#...........#
+#...........#
+#############
