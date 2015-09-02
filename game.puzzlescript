@@ -1,7 +1,7 @@
 title Electronic Sport
 author BaseCase
 homepage caseybrant.com
-require_player_movement
+(require_player_movement)
 (realtime_interval 0.5)
 verbose_logging
 
@@ -46,11 +46,45 @@ Gray
 Player1Move4Used
 Gray
 
-Player2MoveRemaining
-LightBlue
+Player2Move1
+#F00
 
-Player2MoveUsed
-Brown
+Player2Move2
+#E00
+
+Player2Move3
+#D00
+
+Player2Move4
+#C00
+
+Player2Move1Used
+Gray
+
+Player2Move2Used
+Gray
+
+Player2Move3Used
+Gray
+
+Player2Move4Used
+Gray
+
+Player1TurnActive
+Black Brown
+11011
+11101
+11110
+11101
+11011
+
+Player2TurnActive
+Black Brown
+11011
+10111
+01111
+10111
+11011
 
 
 =======
@@ -65,8 +99,13 @@ LEGEND
 2 = Player1Move2
 3 = Player1Move3
 4 = Player1Move4
+A = Player2Move1Used
+B = Player2Move2Used
+C = Player2Move3Used
+D = Player2Move4Used
+Z = Player1TurnActive
 
-Moves = Player1Move1 or Player1Move2 or Player1Move3 or Player1Move4 or Player1Move1Used or Player1Move2Used or Player1Move3Used or Player1Move4Used
+Moves = Player1Move1 or Player1Move2 or Player1Move3 or Player1Move4 or Player1Move1Used or Player1Move2Used or Player1Move3Used or Player1Move4Used or Player2Move1 or Player2Move2 or Player2Move3 or Player2Move4 or Player2Move1Used or Player2Move2Used or Player2Move3Used or Player2Move4Used
 
 
 =======
@@ -79,18 +118,29 @@ COLLISIONLAYERS
 ================
 
 Background
-Player2
-Player, Wall, Moves, Player2MoveRemaining, Player2MoveUsed
+Player, Player2, Wall, Moves, Player1TurnActive, Player2TurnActive
 
 
 ======
 RULES
 ======
 
+(Player2's turn)
+[Moving Player] [Player2] [Player2Move3Used | Player2Move4] -> [Stationary Player] [Moving Player2] [Player2Move3Used | Player2Move4Used]
+[Moving Player] [Player2] [Player2Move2Used | Player2Move3] -> [Stationary Player] [Moving Player2] [Player2Move2Used | Player2Move3Used]
+[Moving Player] [Player2] [Player2Move1Used | Player2Move2] -> [Stationary Player] [Moving Player2] [Player2Move1Used | Player2Move2Used]
+[Moving Player] [Player2] [Player2Move1] -> [Stationary Player] [Moving Player2] [Player2Move1Used]
+
+(Player1's turn)
 [Moving Player] [Player1Move3Used | Player1Move4] -> [Moving Player] [Player1Move3Used | Player1Move4Used]
 [Moving Player] [Player1Move2Used | Player1Move3] -> [Moving Player] [Player1Move2Used | Player1Move3Used]
 [Moving Player] [Player1Move1Used | Player1Move2] -> [Moving Player] [Player1Move1Used | Player1Move2Used]
 [Moving Player] [Player1Move1]                    -> [Moving Player] [Player1Move1Used]
+
+(swap control between the two players)
+late [Player1TurnActive] [Player1Move4Used] [Player2Move4Used | Player2Move3Used | Player2Move2Used | Player2Move1Used] -> [Player2TurnActive] [Player1Move4Used] [Player2Move4 | Player2Move3 | Player2Move2 | Player2Move1]
+
+late [Player2TurnActive] [Player2Move4Used] [Player1Move1Used | Player1Move2Used | Player1Move3Used | Player1Move4Used] -> [Player1TurnActive] [Player2Move4Used] [Player1Move1 | Player1Move2 | Player1Move3 | Player1Move4]
 
 
 ==============
@@ -102,7 +152,7 @@ WINCONDITIONS
 LEVELS
 =======
 
-#1234########
+#1234#Z#DCBA#
 #...........#
 #...........#
 #@.........&#
