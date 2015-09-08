@@ -227,14 +227,10 @@ RULES
 [Moving Player] [Player1Move1Used | Player1Move2Ready] -> [Moving Player] [Player1Move1Used | Player1Move2Used]
 [Moving Player] [Player1Move1Ready]                    -> [Moving Player] [Player1Move1Used]
 
-(swap control between the two players)
+(swap control between the two players every 4 moves)
 late [Player1TurnActive] [Player1Move4Used] -> [InitPlayer2Turn] [Player1Move4Used]
 late [Player2TurnActive] [Player2Move4Used] -> [InitPlayer1Turn] [Player2Move4Used]
 
-
-
-
-(don't use a move by walking into wall)
 [> Player  | Wall] -> cancel
 [> Player2 | Wall] -> cancel
 
@@ -242,6 +238,7 @@ late [Player2TurnActive] [Player2Move4Used] -> [InitPlayer1Turn] [Player2Move4Us
 (((
 *** Ball Stuff (TM)
 )))
+(normal kicks)
 [Player1TurnActive][action Player | Ball | Boundary] -> cancel
 [Player1TurnActive][action Player | Ball] -> [Player1TurnActive][Player | > Ball]
 [Player1TurnActive][action Player | no Ball] -> cancel
@@ -250,15 +247,21 @@ late [Player2TurnActive] [Player2Move4Used] -> [InitPlayer1Turn] [Player2Move4Us
 [Player2TurnActive][action Player2 | Ball] -> [Player2TurnActive][Player2 | > Ball]
 [Player2TurnActive][action Player2 | no Ball] -> cancel
 
+(dribbling -- run into the ball to fancy footwork it behind you)
+[> Player  | Ball] -> [Ball | Player]
+[> Player2 | Ball] -> [Ball | Player2]
 
+(((
+*** GOOOOOOOOLLLLs
+)))
 late [Player1Goal Ball] [BallStart] [Player] [Player2] [Player1Start] [Player2Start] [TurnIndicator] -> [Player1Goal no Ball] [BallStart Ball] [no Player] [no Player2] [Player1Start Player] [Player2Start Player2] [InitPlayer1Turn] message Player 2 scores!
 
 late [Player2Goal Ball] [BallStart] [Player] [Player2] [Player1Start] [Player2Start] [TurnIndicator] -> [Player2Goal no Ball] [BallStart Ball] [no Player] [no Player2] [Player1Start Player] [Player2Start Player2] [InitPlayer2Turn] message Player 1 scores!
 
 
 (((
-the mechanical part of swapping player remaining moves
-happens down here b/c it's init'd in a few different places above and needs to happen last
+*** the mechanical part of swapping player remaining moves
+*** happens down here b/c it's init'd in a few different places above and needs to happen last
 )))
 late [InitPlayer1Turn] [Player1Move1] [Player1Move2] [Player1Move3] [Player1Move4] [Player2Move1] [Player2Move2] [Player2Move3] [Player2Move4] -> [Player1TurnActive] [Player1Move1Ready] [Player1Move2Ready] [Player1Move3Ready] [Player1Move4Ready] [Player2Move1Used] [Player2Move2Used] [Player2Move3Used] [Player2Move4Used]
 
