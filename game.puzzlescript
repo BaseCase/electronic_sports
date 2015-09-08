@@ -1,9 +1,11 @@
 title Electronic Sport
 author BaseCase
 homepage caseybrant.com
-(require_player_movement)
-(realtime_interval 0.5)
-verbose_logging
+
+realtime_interval 0.5
+throttle_movement
+
+(verbose_logging)
 
 
 ========
@@ -86,6 +88,14 @@ Black Brown
 10111
 11011
 
+Ball
+White Black
+.....
+.000.
+.010.
+.000.
+.....
+
 
 =======
 LEGEND
@@ -95,6 +105,7 @@ LEGEND
 # = Wall
 @ = Player
 & = Player2
+O = Ball
 1 = Player1Move1
 2 = Player1Move2
 3 = Player1Move3
@@ -107,6 +118,10 @@ Z = Player1TurnActive
 
 Moves = Player1Move1 or Player1Move2 or Player1Move3 or Player1Move4 or Player1Move1Used or Player1Move2Used or Player1Move3Used or Player1Move4Used or Player2Move1 or Player2Move2 or Player2Move3 or Player2Move4 or Player2Move1Used or Player2Move2Used or Player2Move3Used or Player2Move4Used
 
+TurnIndicator = Player1TurnActive or Player2TurnActive
+
+Boundary = Wall or Moves or TurnIndicator
+
 
 =======
 SOUNDS
@@ -118,12 +133,16 @@ COLLISIONLAYERS
 ================
 
 Background
-Player, Player2, Wall, Moves, Player1TurnActive, Player2TurnActive
+Player, Player2, Wall, Moves, Player1TurnActive, Player2TurnActive, Ball
 
 
 ======
 RULES
 ======
+
+(((
+*** MOVEMENT
+)))
 
 (Player2's turn)
 [Moving Player] [Player2] [Player2Move3Used | Player2Move4] -> [Stationary Player] [Moving Player2] [Player2Move3Used | Player2Move4Used]
@@ -142,6 +161,22 @@ late [Player1TurnActive] [Player1Move4Used] [Player2Move4Used | Player2Move3Used
 
 late [Player2TurnActive] [Player2Move4Used] [Player1Move1Used | Player1Move2Used | Player1Move3Used | Player1Move4Used] -> [Player1TurnActive] [Player2Move4Used] [Player1Move1 | Player1Move2 | Player1Move3 | Player1Move4]
 
+(don't use a move by walking into wall)
+[> Player  | Wall] -> cancel
+[> Player2 | Wall] -> cancel
+
+
+(((
+*** Ball Stuff (TM)
+)))
+[Player1TurnActive][action Player | Ball | Boundary] -> cancel
+[Player1TurnActive][action Player | Ball] -> [Player1TurnActive][Player | > Ball]
+[Player1TurnActive][action Player | no Ball] -> cancel
+
+[Player2TurnActive][action Player2 | Ball | Boundary] -> cancel
+[Player2TurnActive][action Player2 | Ball] -> [Player2TurnActive][Player2 | > Ball]
+[Player2TurnActive][action Player2 | no Ball] -> cancel
+
 
 ==============
 WINCONDITIONS
@@ -155,7 +190,8 @@ LEVELS
 #1234#Z#DCBA#
 #...........#
 #...........#
-#@.........&#
+#@....O....&#
 #...........#
 #...........#
 #############
+
