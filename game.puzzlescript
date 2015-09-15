@@ -4,7 +4,6 @@ homepage caseybrant.com
 
 (realtime_interval 0.5)
 throttle_movement
-
 verbose_logging
 
 
@@ -289,7 +288,6 @@ Obstacle = Wall or Moves or TurnIndicator or EitherPlayer
 
 Goal = Player1Goal or Player2Goal
 
-
 Player1Move1 = Player1Move1Ready or Player1Move1Used
 Player1Move2 = Player1Move2Ready or Player1Move2Used
 Player1Move3 = Player1Move3Ready or Player1Move3Used
@@ -448,11 +446,13 @@ WINCONDITIONS
 LEVELS
 =======
 
-#1234#Z#DCBA#
+#1234#z#DCBA#
+#...........#
 #...........#
 [...........]
-[@....O....&]
+[@....o....&]
 [...........]
+#...........#
 #...........#
 #############
 
