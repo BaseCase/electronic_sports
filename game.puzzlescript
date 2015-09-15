@@ -311,9 +311,9 @@ COLLISIONLAYERS
 ================
 
 Background
-NextToBall
+NextToBall, MovingBall
 Goal, BallStart, Player1Start, Player2Start
-Player, Player2, Wall, Moves, InitPlayer1Turn, Player1TurnActive, InitPlayer2Turn, Player2TurnActive, Ball, MovingBall
+Player, Player2, Wall, Moves, InitPlayer1Turn, Player1TurnActive, InitPlayer2Turn, Player2TurnActive, Ball
 
 
 
@@ -387,11 +387,12 @@ late up    [SEOfBall | | Background] -> [SEOfBall | | NEOfBall Background]
 
 (diagonal kicks)
 [action Player NWOfBall] [Ball] [no Obstacle SEOfBall] -> [action Player NWOfBall] [BallMovingSE] [ ]
-[action Player SWOfBall] [Ball] [no Obstacle NEOfBall]-> [action Player SWOfBall] [BallMovingNE] [ ]
+[action Player SWOfBall] [Ball] [no Obstacle NEOfBall] -> [action Player SWOfBall] [BallMovingNE] [ ]
 [action Player SEOfBall] [Ball] [no Obstacle NWOfBall] -> [action Player SEOfBall] [BallMovingNW] [ ]
 [action Player NEOfBall] [Ball] [no Obstacle SWOfBall] -> [action Player NEOfBall] [BallMovingSW] [ ]
 
 (ball in motion)
+(late right [BallMovingSE | Player2] -> [ | BallMovingDown Player2])
 late right [BallMovingSE | ] -> [ | BallMovingDown]
 late left  [BallMovingSW | ] -> [ | BallMovingDown]
 late right [BallMovingNE | ] -> [ | BallMovingUp]
