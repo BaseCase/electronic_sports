@@ -218,7 +218,7 @@ Red Black
 
 TopOfBall
 Black
-..0..
+.....
 .....
 .....
 .....
@@ -226,7 +226,7 @@ Black
 
 NWOfBall
 Black
-0....
+.....
 .....
 .....
 .....
@@ -234,7 +234,7 @@ Black
 
 NEOfBall
 Black
-....0
+.....
 .....
 .....
 .....
@@ -246,7 +246,7 @@ Black
 .....
 .....
 .....
-....0
+.....
 
 SWOfBall
 Black
@@ -254,7 +254,7 @@ Black
 .....
 .....
 .....
-0....
+.....
 
 
 =======
@@ -278,13 +278,17 @@ Z = Player1TurnActive
 [ = Player1Goal
 ] = Player2Goal
 
+Player1 = Player
+EitherPlayer = Player1 or Player2
+
 Moves = Player1Move1Ready or Player1Move2Ready or Player1Move3Ready or Player1Move4Ready or Player1Move1Used or Player1Move2Used or Player1Move3Used or Player1Move4Used or Player2Move1Ready or Player2Move2Ready or Player2Move3Ready or Player2Move4Ready or Player2Move1Used or Player2Move2Used or Player2Move3Used or Player2Move4Used
 
 TurnIndicator = Player1TurnActive or Player2TurnActive or InitPlayer1Turn or InitPlayer2Turn
 
-Obstacle = Wall or Moves or TurnIndicator or Player or Player2
+Obstacle = Wall or Moves or TurnIndicator or EitherPlayer
 
 Goal = Player1Goal or Player2Goal
+
 
 Player1Move1 = Player1Move1Ready or Player1Move1Used
 Player1Move2 = Player1Move2Ready or Player1Move2Used
@@ -313,7 +317,7 @@ COLLISIONLAYERS
 Background
 NextToBall, MovingBall
 Goal, BallStart, Player1Start, Player2Start
-Player, Player2, Wall, Moves, InitPlayer1Turn, Player1TurnActive, InitPlayer2Turn, Player2TurnActive, Ball
+Player1, Player2, Wall, Moves, InitPlayer1Turn, Player1TurnActive, InitPlayer2Turn, Player2TurnActive, Ball
 
 
 
@@ -328,22 +332,22 @@ RULES
 *** MOVEMENT
 )))
 (Player2's turn)
-[Moving Player] [Player2] [Player2Move3Used | Player2Move4Ready] -> [Stationary Player] [Moving Player2] [Player2Move3Used | Player2Move4Used]
-[Moving Player] [Player2] [Player2Move2Used | Player2Move3Ready] -> [Stationary Player] [Moving Player2] [Player2Move2Used | Player2Move3Used]
-[Moving Player] [Player2] [Player2Move1Used | Player2Move2Ready] -> [Stationary Player] [Moving Player2] [Player2Move1Used | Player2Move2Used]
-[Moving Player] [Player2] [Player2Move1Ready] -> [Stationary Player] [Moving Player2] [Player2Move1Used]
+[Moving Player1] [Player2] [Player2Move3Used | Player2Move4Ready] -> [Stationary Player1] [Moving Player2] [Player2Move3Used | Player2Move4Used]
+[Moving Player1] [Player2] [Player2Move2Used | Player2Move3Ready] -> [Stationary Player1] [Moving Player2] [Player2Move2Used | Player2Move3Used]
+[Moving Player1] [Player2] [Player2Move1Used | Player2Move2Ready] -> [Stationary Player1] [Moving Player2] [Player2Move1Used | Player2Move2Used]
+[Moving Player1] [Player2] [Player2Move1Ready] -> [Stationary Player1] [Moving Player2] [Player2Move1Used]
 
 (Player1's turn)
-[Moving Player] [Player1Move3Used | Player1Move4Ready] -> [Moving Player] [Player1Move3Used | Player1Move4Used]
-[Moving Player] [Player1Move2Used | Player1Move3Ready] -> [Moving Player] [Player1Move2Used | Player1Move3Used]
-[Moving Player] [Player1Move1Used | Player1Move2Ready] -> [Moving Player] [Player1Move1Used | Player1Move2Used]
-[Moving Player] [Player1Move1Ready]                    -> [Moving Player] [Player1Move1Used]
+[Moving Player1] [Player1Move3Used | Player1Move4Ready] -> [Moving Player1] [Player1Move3Used | Player1Move4Used]
+[Moving Player1] [Player1Move2Used | Player1Move3Ready] -> [Moving Player1] [Player1Move2Used | Player1Move3Used]
+[Moving Player1] [Player1Move1Used | Player1Move2Ready] -> [Moving Player1] [Player1Move1Used | Player1Move2Used]
+[Moving Player1] [Player1Move1Ready]                    -> [Moving Player1] [Player1Move1Used]
 
 (swap control between the two players every 4 moves)
 late [Player1TurnActive] [Player1Move4Used] -> [InitPlayer2Turn] [Player1Move4Used]
 late [Player2TurnActive] [Player2Move4Used] -> [InitPlayer1Turn] [Player2Move4Used]
 
-[> Player  | Wall] -> cancel
+[> Player1 | Wall] -> cancel
 [> Player2 | Wall] -> cancel
 
 
@@ -373,23 +377,21 @@ late up    [SEOfBall | | Background] -> [SEOfBall | | NEOfBall Background]
 *** Kicks and ball movement
 )))
 (normal kicks)
-[Player1TurnActive][action Player | Ball | Obstacle] -> cancel
-[Player1TurnActive][action Player | Ball] -> [Player1TurnActive][Player | > Ball]
-([Player1TurnActive][action Player | no Ball] -> cancel)
+[Player1TurnActive][action Player1 | Ball | Obstacle] -> cancel
+[Player1TurnActive][action Player1 | Ball] -> [Player1TurnActive][Player1 | > Ball]
 
 [Player2TurnActive][action Player2 | Ball | Obstacle] -> cancel
 [Player2TurnActive][action Player2 | Ball] -> [Player2TurnActive][Player2 | > Ball]
-([Player2TurnActive][action Player2 | no Ball] -> cancel)
 
 (dribbling -- run into the ball to fancy footwork it behind you)
-[> Player  | Ball] -> [Ball | Player]
+[> Player1 | Ball] -> [Ball | Player1]
 [> Player2 | Ball] -> [Ball | Player2]
 
 (diagonal kicks)
-[action Player NWOfBall] [Ball] [no Obstacle SEOfBall] -> [action Player NWOfBall] [BallMovingSE] [ ]
-[action Player SWOfBall] [Ball] [no Obstacle NEOfBall] -> [action Player SWOfBall] [BallMovingNE] [ ]
-[action Player SEOfBall] [Ball] [no Obstacle NWOfBall] -> [action Player SEOfBall] [BallMovingNW] [ ]
-[action Player NEOfBall] [Ball] [no Obstacle SWOfBall] -> [action Player NEOfBall] [BallMovingSW] [ ]
+[action EitherPlayer NWOfBall] [Ball] [no Obstacle SEOfBall] -> [action EitherPlayer NWOfBall] [BallMovingSE] [ ]
+[action EitherPlayer SWOfBall] [Ball] [no Obstacle NEOfBall] -> [action EitherPlayer SWOfBall] [BallMovingNE] [ ]
+[action EitherPlayer SEOfBall] [Ball] [no Obstacle NWOfBall] -> [action EitherPlayer SEOfBall] [BallMovingNW] [ ]
+[action EitherPlayer NEOfBall] [Ball] [no Obstacle SWOfBall] -> [action EitherPlayer NEOfBall] [BallMovingSW] [ ]
 
 (ball in motion)
 (late right [BallMovingSE | Player2] -> [ | BallMovingDown Player2])
@@ -411,9 +413,9 @@ late up    [BallMovingUp   | no Obstacle] -> [ | Ball]
 (((
 *** GOOOOOOOOLLLLs
 )))
-late [Player1Goal Ball] [BallStart] [Player] [Player2] [Player1Start] [Player2Start] [TurnIndicator] -> [Player1Goal no Ball] [BallStart Ball] [no Player] [no Player2] [Player1Start Player] [Player2Start Player2] [InitPlayer1Turn] message Player 2 scores!
+late [Player1Goal Ball] [BallStart] [Player1] [Player2] [Player1Start] [Player2Start] [TurnIndicator] -> [Player1Goal no Ball] [BallStart Ball] [no Player1] [no Player2] [Player1Start Player1] [Player2Start Player2] [InitPlayer1Turn] message Player 2 scores!
 
-late [Player2Goal Ball] [BallStart] [Player] [Player2] [Player1Start] [Player2Start] [TurnIndicator] -> [Player2Goal no Ball] [BallStart Ball] [no Player] [no Player2] [Player1Start Player] [Player2Start Player2] [InitPlayer2Turn] message Player 1 scores!
+late [Player2Goal Ball] [BallStart] [Player1] [Player2] [Player1Start] [Player2Start] [TurnIndicator] -> [Player2Goal no Ball] [BallStart Ball] [no Player1] [no Player2] [Player1Start Player1] [Player2Start Player2] [InitPlayer2Turn] message Player 1 scores!
 
 
 
@@ -427,12 +429,10 @@ late [Player2Goal Ball] [BallStart] [Player] [Player2] [Player1Start] [Player2St
 *** the mechanical part of swapping player remaining moves
 *** happens down here b/c it's init'd in a few different places above and needs to happen last
 )))
-late [InitPlayer2Turn] -> [InitPlayer1Turn] (delete this line to activate player 2)
+(late [InitPlayer2Turn] -> [InitPlayer1Turn] (delete this line to activate player 2))
 late [InitPlayer1Turn] [Player1Move1] [Player1Move2] [Player1Move3] [Player1Move4] [Player2Move1] [Player2Move2] [Player2Move3] [Player2Move4] -> [Player1TurnActive] [Player1Move1Ready] [Player1Move2Ready] [Player1Move3Ready] [Player1Move4Ready] [Player2Move1Used] [Player2Move2Used] [Player2Move3Used] [Player2Move4Used]
 
-(((( uncomment to activate player 2's moves
 late [InitPlayer2Turn] [Player1Move1] [Player1Move2] [Player1Move3] [Player1Move4] [Player2Move1] [Player2Move2] [Player2Move3] [Player2Move4] -> [Player2TurnActive] [Player1Move1Used] [Player1Move2Used] [Player1Move3Used] [Player1Move4Used] [Player2Move1Ready] [Player2Move2Ready] [Player2Move3Ready] [Player2Move4Ready]
-))))
 
 
 
