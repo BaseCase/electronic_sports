@@ -19,7 +19,7 @@ Wall
 Brown
 
 Player
-White
+Gray
 
 Player1Start
 White
@@ -218,7 +218,7 @@ Red Black
 
 TopOfBall
 Black
-.....
+..0..
 .....
 .....
 .....
@@ -226,7 +226,7 @@ Black
 
 NWOfBall
 Black
-.....
+0....
 .....
 .....
 .....
@@ -234,7 +234,7 @@ Black
 
 NEOfBall
 Black
-.....
+....0
 .....
 .....
 .....
@@ -246,7 +246,7 @@ Black
 .....
 .....
 .....
-.....
+....0
 
 SWOfBall
 Black
@@ -254,7 +254,7 @@ Black
 .....
 .....
 .....
-.....
+0....
 
 
 =======
@@ -282,7 +282,7 @@ Moves = Player1Move1Ready or Player1Move2Ready or Player1Move3Ready or Player1Mo
 
 TurnIndicator = Player1TurnActive or Player2TurnActive or InitPlayer1Turn or InitPlayer2Turn
 
-Boundary = Wall or Moves or TurnIndicator
+Obstacle = Wall or Moves or TurnIndicator or Player or Player2
 
 Goal = Player1Goal or Player2Goal
 
@@ -311,8 +311,13 @@ COLLISIONLAYERS
 ================
 
 Background
-Goal, BallStart, Player1Start, Player2Start, NextToBall
+NextToBall
+Goal, BallStart, Player1Start, Player2Start
 Player, Player2, Wall, Moves, InitPlayer1Turn, Player1TurnActive, InitPlayer2Turn, Player2TurnActive, Ball, MovingBall
+
+
+
+
 
 
 ======
@@ -322,7 +327,6 @@ RULES
 (((
 *** MOVEMENT
 )))
-
 (Player2's turn)
 [Moving Player] [Player2] [Player2Move3Used | Player2Move4Ready] -> [Stationary Player] [Moving Player2] [Player2Move3Used | Player2Move4Used]
 [Moving Player] [Player2] [Player2Move2Used | Player2Move3Ready] -> [Stationary Player] [Moving Player2] [Player2Move2Used | Player2Move3Used]
@@ -343,10 +347,14 @@ late [Player2TurnActive] [Player2Move4Used] -> [InitPlayer1Turn] [Player2Move4Us
 [> Player2 | Wall] -> cancel
 
 
+
+
+
+
 (((
-*** trying to get diagonals working
+*** ball proximity
 )))
-late [NextToBall] -> [Background] (reset and recalculate each turn)
+late [NextToBall] -> [ ] (reset and recalculate each turn)
 
 (drop down these invisible markers to we can respond to diagonal kicks)
 late up    [Ball | Background] -> [Ball | TopOfBall Background]
@@ -356,15 +364,20 @@ late right [SWOfBall | | Background] -> [SWOfBall | | SEOfBall Background]
 late up    [SEOfBall | | Background] -> [SEOfBall | | NEOfBall Background]
 
 
+
+
+
+
+
 (((
-*** Ball Stuff (TM)
+*** Kicks and ball movement
 )))
 (normal kicks)
-[Player1TurnActive][action Player | Ball | Boundary] -> cancel
+[Player1TurnActive][action Player | Ball | Obstacle] -> cancel
 [Player1TurnActive][action Player | Ball] -> [Player1TurnActive][Player | > Ball]
 ([Player1TurnActive][action Player | no Ball] -> cancel)
 
-[Player2TurnActive][action Player2 | Ball | Boundary] -> cancel
+[Player2TurnActive][action Player2 | Ball | Obstacle] -> cancel
 [Player2TurnActive][action Player2 | Ball] -> [Player2TurnActive][Player2 | > Ball]
 ([Player2TurnActive][action Player2 | no Ball] -> cancel)
 
@@ -373,10 +386,10 @@ late up    [SEOfBall | | Background] -> [SEOfBall | | NEOfBall Background]
 [> Player2 | Ball] -> [Ball | Player2]
 
 (diagonal kicks)
-[action Player NWOfBall] [Ball] -> [action Player NWOfBall] [BallMovingSE]
-[action Player SWOfBall] [Ball] -> [action Player NWOfBall] [BallMovingNE]
-[action Player SEOfBall] [Ball] -> [action Player NWOfBall] [BallMovingNW]
-[action Player NEOfBall] [Ball] -> [action Player NWOfBall] [BallMovingSW]
+[action Player NWOfBall] [Ball] [no Obstacle SEOfBall] -> [action Player NWOfBall] [BallMovingSE] [ ]
+[action Player SWOfBall] [Ball] [no Obstacle NEOfBall]-> [action Player SWOfBall] [BallMovingNE] [ ]
+[action Player SEOfBall] [Ball] [no Obstacle NWOfBall] -> [action Player SEOfBall] [BallMovingNW] [ ]
+[action Player NEOfBall] [Ball] [no Obstacle SWOfBall] -> [action Player NEOfBall] [BallMovingSW] [ ]
 
 (ball in motion)
 late right [BallMovingSE | ] -> [ | BallMovingDown]
@@ -384,8 +397,14 @@ late left  [BallMovingSW | ] -> [ | BallMovingDown]
 late right [BallMovingNE | ] -> [ | BallMovingUp]
 late left  [BallMovingNW | ] -> [ | BallMovingUp]
 
-late down  [BallMovingDown | ] -> [ | Ball]
-late up    [BallMovingUp   | ] -> [ | Ball]
+late down  [BallMovingDown | no Obstacle] -> [ | Ball]
+late up    [BallMovingUp   | no Obstacle] -> [ | Ball]
+
+
+
+
+
+
 
 
 (((
@@ -394,6 +413,13 @@ late up    [BallMovingUp   | ] -> [ | Ball]
 late [Player1Goal Ball] [BallStart] [Player] [Player2] [Player1Start] [Player2Start] [TurnIndicator] -> [Player1Goal no Ball] [BallStart Ball] [no Player] [no Player2] [Player1Start Player] [Player2Start Player2] [InitPlayer1Turn] message Player 2 scores!
 
 late [Player2Goal Ball] [BallStart] [Player] [Player2] [Player1Start] [Player2Start] [TurnIndicator] -> [Player2Goal no Ball] [BallStart Ball] [no Player] [no Player2] [Player1Start Player] [Player2Start Player2] [InitPlayer2Turn] message Player 1 scores!
+
+
+
+
+
+
+
 
 
 (((
@@ -406,6 +432,11 @@ late [InitPlayer1Turn] [Player1Move1] [Player1Move2] [Player1Move3] [Player1Move
 (((( uncomment to activate player 2's moves
 late [InitPlayer2Turn] [Player1Move1] [Player1Move2] [Player1Move3] [Player1Move4] [Player2Move1] [Player2Move2] [Player2Move3] [Player2Move4] -> [Player2TurnActive] [Player1Move1Used] [Player1Move2Used] [Player1Move3Used] [Player1Move4Used] [Player2Move1Ready] [Player2Move2Ready] [Player2Move3Ready] [Player2Move4Ready]
 ))))
+
+
+
+
+
 
 ==============
 WINCONDITIONS
