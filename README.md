@@ -11,3 +11,5 @@ A new PuzzleScript game!! Work in progress for now. Will fill out this README as
 * obstacles? different courts? you could do this by walking between rooms and game starts when you sit on the start square in a court
 * special move where a player can drop obstacles in the way of each other?
 * background youtube: soccer game crowd noises
+* multiple peeps (with different abilities?) on each side
+* maybe only one move and then switch sides?
